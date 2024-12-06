@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const x = process.env.NEXT_PUBLIC_BE_URL;
-const socket = io(x); // Backend URL
+
+const socket = io(x, {
+  transports: ["websocket", "polling"],
+});
 
 export default function BarcodeScanner() {
   const [messages, setMessages] = useState<string[]>([]);
