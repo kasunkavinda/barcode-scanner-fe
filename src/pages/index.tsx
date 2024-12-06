@@ -1,9 +1,8 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
-const socket = io(process.env.BE_URL); // Backend URL
+const x = process.env.NEXT_PUBLIC_BE_URL;
+const socket = io(x); // Backend URL
 
 export default function BarcodeScanner() {
   const [messages, setMessages] = useState<string[]>([]);

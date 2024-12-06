@@ -8,7 +8,7 @@ const useWebSocket = () => {
     const [message, setMessage] = useState(null);
 
     useEffect(() => {
-        const newSocket = io(process.env.BE_URL); // Replace with your backend URL
+        const newSocket = io(process.env.NEXT_PUBLIC_BE_URL); // Replace with your backend URL
         setSocket(newSocket);
 
         newSocket.on("barcodeResponse", (data) => {
