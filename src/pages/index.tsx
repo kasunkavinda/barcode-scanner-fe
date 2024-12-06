@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import dynamic from "next/dynamic";
+// Dynamically import react-qr-barcode-scanner
+const QrReader = dynamic(() => import("react-qr-barcode-scanner"), {
+  ssr: false,
+});
 
 const x = process.env.NEXT_PUBLIC_BE_URL;
 
@@ -9,6 +14,7 @@ const socket = io(x, {
 
 export default function BarcodeScanner() {
   const [messages, setMessages] = useState<string[]>([]);
+  const [scannedData, setScannedData] = useState<string | null>(null);
 
   useEffect(() => {
     // Listen to events from the backend
@@ -29,6 +35,18 @@ export default function BarcodeScanner() {
     }
   };
 
+  const handleScan = (data: string | null) => {
+    if (data) {
+      setScannedData(data);
+      console.log("Scanned Data:", data);
+      socket.emit("barcodex", { barcode: data });
+    }
+  };
+
+  const handleError = (err: any) => {
+    console.error("Scan Error:", err);
+  };
+
   return (
     <div>
       {/* Input field to capture barcode scanner data */}
@@ -38,6 +56,13 @@ export default function BarcodeScanner() {
         onKeyPress={handleKeyPress}
         autoFocus // Automatically focus the input field for continuous scanning
       />
+      <QrReader
+        onUpdate={(err, result) => {
+          if (result) handleScan(result.getText());
+          if (err) handleError(err);
+        }}
+      />
+      {scannedData && <p>Scanned Data: {scannedData}</p>}
       <div>
         <h3>Responses:</h3>
         {messages.map((msg, index) => (
